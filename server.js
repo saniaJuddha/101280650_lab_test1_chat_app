@@ -124,6 +124,8 @@ io.on("connection", (socket) => {
     console.log('Connection Created....')
     // console.log(socket.id)
 
+    socket.emit('sendSocket', socket.id)
+
     socket.emit('welcome', `Welcome to Chatbot. Your id is ${socket.id}`)
 
     // socket.on('message', (data) => {
@@ -155,11 +157,11 @@ io.on("connection", (socket) => {
         socket.emit('newMessage', msg)
         socket.broadcast.to(roomName).emit('newMessage', msg)
 
-        // Msg.find({ room: roomName }, function (err, docs) {
-        //     if (err) {
-        //         throw err;
-        //     } socket.emit('load old messages', docs)
-        // })
+        Msg.find({ room: roomName }, function (err, docs) {
+            if (err) {
+                throw err;
+            } socket.emit('load old messages', docs)
+        })
     })
 
     //send message to group
@@ -185,11 +187,10 @@ io.on("connection", (socket) => {
 
     })
 
-    //disconnect user
-    socket.on('disconnect', () => {
+     //disconnect user
+     socket.on('disconnect', () => {
         console.log(`${socket.id} Client Disconnect....`)
     })
-
 
 })
 

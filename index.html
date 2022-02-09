@@ -62,7 +62,24 @@
 
     <script src="/socket.io/socket.io.js"></script>
     <script>
-        const client = io()
+       const client = io()
+
+       var socketId = null;
+
+
+       client.on('sendSocket', (id)=>{
+           socketId = id
+
+       })
+
+       client.on('load old messages',(docs)=>{
+        console.log(docs)
+           docs.forEach( (msg) => {
+               
+            const data = `<b>${msg.from}:</b>${msg.message}`
+            addMessage(data)
+        })
+       })
 
         client.on('Welcome', (message) => {
             addMessage(message)
@@ -70,7 +87,7 @@
 
         //Message from other client
         client.on('newMessage', (msg) => {
-            const data = `<b>${msg.sender}:</b>${msg.message}`
+            const data = `<b>${msg.sender === socketId?'Me':msg.sender}:</b>${msg.message}`
             addMessage(data)
         })
 
@@ -102,12 +119,9 @@
 
             if(!roomName){
                 alert("Please enter a room name")
-            }else{
-            //     for(var i =0;i<docs.length; i++){
-            //     client.emit('room_message', msg)
-            // }
+             }
                 client.emit('join', roomName)
-            }
+            
             
         }
 
